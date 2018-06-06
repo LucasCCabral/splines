@@ -10,7 +10,7 @@ function resizeToFit() {
 }
 
 /*this version is stable but not working correctly in my web browser,to test this
-simulate it on the PG classroom article.*/
+simulate it on js fiddle*/
 
 function Dot(x,y){
    this.x=x;
