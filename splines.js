@@ -73,7 +73,7 @@ function bezierCurve(){
     		aux2.x = aux1.x;
     		aux2.y = aux1.y;
     	}
-    	
+
     	drawLine1();
 	}
 }
@@ -106,7 +106,7 @@ canvas.addEventListener('mousedown', function(e) {
 //console.log("p2.x= " + " " + p2.x + "p2.y= "+ p2.y);    
     drawDot();    
     
-    if(i === 3){
+    if(i%3 === 0){
     	for(var k = 0; k < controlPointx.length;k++){
     		console.log("p%d.x=" + controlPointx[k] + "p%d.y"+controlPointy[k] ,k,k);
     	}
