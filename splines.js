@@ -9,10 +9,6 @@ function resizeToFit() {
     resizeCanvas(width, height);
 }
 
-/*this version is stable but not working correctly in my web browser,to test this
-simulate it on js fiddle*/
-
-
 function Dot(x,y){
    this.x=x;
    this.y=y;
@@ -56,7 +52,7 @@ function bezierCurve(){
 	var c;
 	var d;
 	for(var t = 0; t <=1 ; t+=0.01){
-		console.log("t= "+t+"\n");
+//console.log("t= "+t+"\n");
 		//substituir esse trecho por uma função que envia t e retorna (x,y)
 		l = 1-t;
 		a = Math.pow(l,3);
@@ -78,51 +74,35 @@ function bezierCurve(){
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
-
-//excluir depois, estou usando isso porque não consigo trabalhar com arrays
-var p1 = new Dot(50,50);
-var p2 = new Dot(100,100);
-var p3 = new Dot(150,100);
-var p4 = new Dot(200,50);
-
+resizeToFit();
 //colocar como variável local em bezeierCurve, assim que descobrir como enviar variáveis locais
 var aux1 = new Dot(50,50);
 var aux2 = new Dot(0,0);
+//playing with arrays
+var p1 = new Dot(0,0);
+var p2 = new Dot(0,0);
+var controlPoints = new Array;
+var i = 0;
+var j = 0;
 
-
-//var controlPoints = [p1];
-resizeToFit();
-
-//------------------------------------- Tirar assim que possível
-drawDot();		
-p2.x = p1.x;
-p2.y = p1.y;
-p1.x += 50;
-p1.y += 50; //(100,100)
-drawDot();
-drawLine();
-p2.x = p1.x;
-p2.y = p1.y;
-p1.x += 50; //(150,100)
-drawDot();
-drawLine();
-p2.x = p1.x;
-p2.y = p1.y;
-p1.x += 50; //(200,50)
-p1.y -= 50;
-drawDot();
-drawLine();
-
-p1.x = 50;
-p1.x = 50;
-p2.x=100;
-p2.y = 100;
-//-------------------------------- tirar assim que possível
-bezierCurve();
-
+//estou salvando um ponteiro para p1 e não os seus valores em si.
 canvas.addEventListener('mousedown', function(e) {
-	i++;
 	p1.x=e.offsetX;
     p1.y=e.offsetY;
+    controlPoints.push(p1); //quero passar os valores apenas
+
+    if(i>0){
+    	p2 = controlPoints[j];
+    	drawLine();
+    }
+	
+	console.log("p1.x= " + controlPoints[i].x + "p1.y= " + controlPoints[i].y);
+	console.log("p2.x= " + controlPoints[j].x + "p2.y= " + controlPoints[j].y);    
+
     drawDot();
+    
+    j=i;
+    i++;
 });
+
+
