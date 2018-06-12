@@ -154,13 +154,17 @@ canvas.addEventListener('mousedown', function(e) {
     	stringSize();
     	bezierCalculus();
     	L = getL(i);
-console.log("L=%d",L);
+    	//i =3, L = 3-2 -> 1;
+    	bezierCurve(L);
+
+/*console.log("L=%d",L);
 for(var h=0;h<=3*L;h++){
 console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
 }
-console.log('');
-
-    }
+for(var h =0; h <=i;h++){
+console.log("d%d:(%f,%f), ",h-1,inputPointx[h],inputPointy[h]);	
+}*/
+  }
     drawDot();    
     j=i;
     i++;
