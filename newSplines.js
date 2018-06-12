@@ -137,11 +137,15 @@ function bezierCalculus(){
 
 
 function isInCircle(click) {
-    var v = {
-        x: circle.x - click.x,
-        y: circle.y - click.y
-    };
-    return (Math.sqrt(v.x * v.x + v.y * v.y) <= circle.radius);
+	var vx,vy;
+    for(var k=0; k<i;k++){
+        vx = inputPointx[j] - click.x,
+        vy = inputPointy[j] - click.y
+    	if(Math.sqrt(vx * vx + vy * vy) <= 15){
+    		move = 1;
+    		console.log("It's in.");
+    	}
+    }			
 }
 
 var canvas = document.getElementById('canvas');
@@ -153,38 +157,48 @@ var inputPointx = new Array;
 var inputPointy = new Array;
 var u = new Array; // o vetor vai guardar o tamanho da corda
 var i = 0,j = 0;
-
-var circle = {
-    x: 15,
-    y: 100,
-    radius: 15
-};
+var move = 0;
 
 
 canvas.addEventListener('mousedown', function(e) {
-    inputPointx.push(e.offsetX);
-    inputPointy.push(e.offsetY);
-    if(i>0){
-    	color = "black";
-    	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
+    isInCircle({x: e.offsetX,y: e.offsetY});
+    console.log(move);
+   //if(e.button === 1)
+   if(!move){
+       inputPointx.push(e.offsetX);
+       inputPointy.push(e.offsetY);
+       if(i>0){
+       	color = "black";
+       	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
+       }
+       if(i>=3){
+       	stringSize();
+       	bezierCalculus();
+       	L = getL(i);
+       	ctx.clearRect(0, 0, canvas.width, canvas.height);
+       	drawOrigPoints();
+       	//i =3, L = 3-2 -> 1;
+       	bezierCurve(L);
+   /*console.log("L=%d",L);
+   for(var h=0;h<=3*L;h++){
+   console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
+   }
+   for(var h =0; h <=i;h++){
+   console.log("d%d:(%f,%f), ",h-1,inputPointx[h],inputPointy[h]);	
+   }*/
+     }
+       drawDot(inputPointx[i],inputPointy[i]);    
+       j=i;
+       i++;
+   }
+});
+
+//not working
+canvas.addEventListener('mousemove', function(e) {
+    if (move) {
+        inputPointx = e.offsetX;
+        inputPointy = e.offsetY;
+        drawDot(inputPointx[i],inputPointy[i]);    
+
     }
-    if(i>=3){
-    	stringSize();
-    	bezierCalculus();
-    	L = getL(i);
-    	ctx.clearRect(0, 0, canvas.width, canvas.height);
-    	drawOrigPoints();
-    	//i =3, L = 3-2 -> 1;
-    	bezierCurve(L);
-/*console.log("L=%d",L);
-for(var h=0;h<=3*L;h++){
-console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
-}
-for(var h =0; h <=i;h++){
-console.log("d%d:(%f,%f), ",h-1,inputPointx[h],inputPointy[h]);	
-}*/
-  }
-    drawDot(inputPointx[i],inputPointy[i]);    
-    j=i;
-    i++;
 });
