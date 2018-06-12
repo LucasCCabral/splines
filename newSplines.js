@@ -28,10 +28,11 @@ function getL(index){
 
 
 function drawOrigPoints (){
-	for(var z=0; z<=i;z++){
+	drawDot(inputPointx[0],inputPointy[0]);
+	for(var z=1; z<=i;z++){
+		color = 'black';
 		drawDot(inputPointx[z],inputPointy[z]);
-		if(z>0)
-			drawLine(inputPointx[z-1],inputPointy[z-1],inputPointx[z],inputPointy[z]);
+		drawLine(inputPointx[z-1],inputPointy[z-1],inputPointx[z],inputPointy[z]);
 	}
 }
 
@@ -42,6 +43,15 @@ function stringSize(){
 	strS = inputPointy[i]-inputPointy[0];
 	strS = Math.sqrt(strS**2+aux**2);
 	u.push(strS);
+//console.log("P%d(%d,%d) P%d(%d,%d)",i,inputPointx[i],inputPointy[i],0,inputPointx[0],inputPointy[0]);
+//console.log("deltaU%d:%d ",i-3,strS);
+}
+function stringSizeChange(k){
+	var aux,strS;
+	aux = inputPointx[k]-inputPointx[0];
+	strS = inputPointy[k]-inputPointy[0];
+	strS = Math.sqrt(strS**2+aux**2);
+	u[k-2] = (strS);
 //console.log("P%d(%d,%d) P%d(%d,%d)",i,inputPointx[i],inputPointy[i],0,inputPointx[0],inputPointy[0]);
 //console.log("deltaU%d:%d ",i-3,strS);
 }
@@ -139,10 +149,12 @@ function bezierCalculus(){
 function isInCircle(click) {
 	var vx,vy;
     for(var k=0; k<i;k++){
-        vx = inputPointx[j] - click.x,
-        vy = inputPointy[j] - click.y
-    	if(Math.sqrt(vx * vx + vy * vy) <= 15)
+        vx = inputPointx[k] - click.x,
+        vy = inputPointy[k] - click.y
+		if(Math.sqrt(vx * vx + vy * vy) <= 15){
     		move = 1;
+    		movingIndex = k;
+		}
     }			
 }
 
@@ -155,51 +167,75 @@ var inputPointx = new Array;
 var inputPointy = new Array;
 var u = new Array; // o vetor vai guardar o tamanho da corda
 var i = 0,j = 0;
-var move = 0;
+var move = 0,movingIndex;
 
 
 canvas.addEventListener('mousedown', function(e) {
-    inputPointx.push(e.offsetX);
-    inputPointy.push(e.offsetY);
-    isInCircle({x: e.offsetX,y: e.offsetY});
-    console.log(move);
+   isInCircle({x: e.offsetX,y: e.offsetY});
    //if(e.button === 1)
-   if(!move){   
-       if(i>0){
-       	color = "black";
-       	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
-       }
-       if(i>=3){
-       	stringSize();
-       	bezierCalculus();
-       	L = getL(i);
-       	ctx.clearRect(0, 0, canvas.width, canvas.height);
-       	drawOrigPoints();
-       	//i =3, L = 3-2 -> 1;
-       	bezierCurve(L);
-   /*console.log("L=%d",L);
-   for(var h=0;h<=3*L;h++){
-   console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
+   
+   if (e.button === 2){
+   		console.log("hurray");
+   		isInCircle({x: e.offsetX,y: e.offsetY});
+   		if(move){
+   			inputPointx.splice(movingIndex, 1);
+   			inputPointy.splice(movingIndex, 1);   			
+   			move=0;
+   			i--;
+   			if(movingIndex>=2){
+      	      	stringSizeChange(movingIndex);       	
+	      	}
+	      	bezierCalculus();
+	       	L = getL(i); 
+	      	console.log(movingIndex,L);
+	       	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	       	drawOrigPoints();
+	       	bezierCurve(L);
+   		}
    }
-   for(var h =0; h <=i;h++){
-   console.log("d%d:(%f,%f), ",h-1,inputPointx[h],inputPointy[h]);	
-   }*/
-     }
-       drawDot(inputPointx[i],inputPointy[i]);    
-       j=i;
-       i++;
-   }
+
+   if(e.button === 0){
+      if(!move){   
+      		inputPointx.push(e.offsetX);
+      		inputPointy.push(e.offsetY);
+          	if(i>0){
+          	color = "black";
+          	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
+          }
+          if(i>=3){
+          	stringSize();
+          	bezierCalculus();
+          	L = getL(i);
+          	ctx.clearRect(0, 0, canvas.width, canvas.height);
+          	drawOrigPoints();
+          	bezierCurve(L);
+        }
+          drawDot(inputPointx[i],inputPointy[i]);    
+          j=i;
+          i++;
+      }
+  }
 });
 
 //not working
 canvas.addEventListener('mousemove', function(e) {
     if (move) {
-        inputPointx = e.offsetX;
-        inputPointy = e.offsetY;
-        drawDot(inputPointx[i],inputPointy[i]);    
-    }
+        inputPointx[movingIndex] = e.offsetX;
+        inputPointy[movingIndex] = e.offsetY;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);       	
+      	//CHANGES THE STRING SIZE
+      	if(movingIndex>=2){
+      	      	stringSizeChange(movingIndex);       	
+      	}
+      	bezierCalculus();
+       	L = getL(i); 
+      	console.log(movingIndex,L);
+       	ctx.clearRect(0, 0, canvas.width, canvas.height);
+       	drawOrigPoints();
+       	bezierCurve(L);
+     }	
 });
 
 canvas.addEventListener('mouseup', function(e) {
-    move = false;
-});
+    move = 0;
+}); 

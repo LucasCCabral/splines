@@ -25,8 +25,6 @@ function bezierCurve(L){
 	var a,b,c,d,l,uaux;
 	color = "red";
 	for(var h = 0; h<3*L; h=h+3){
-//ta errado pq no caso base deveria ser bezier
-//console.log("b%d:(%f,%f) b%d:(%f,%f) b%d:(%f,%f) b%d:(%f,%f)",h+3,controlPointx[h+3],controlPointy[h+3],h+2,controlPointx[h+2],controlPointy[h+2],h+1,controlPointx[h+1],controlPointy[h+1],h,controlPointx[h],controlPointy[h]);
 		for(var t = 0; t <=1 ; t+=0.001){
 			l = 1-t;
 			a = l**3;
@@ -34,6 +32,7 @@ function bezierCurve(L){
 			c = t**2;
 			d = t**3;
 
+//console.log(controlPointx[h+3],controlPointx[h+2],controlPointx[h+1],controlPointx[h]);
 //sempre vai estar um atrasado, em tese sem discontinuidades
 			aux2.x = aux1.x;
 		    aux2.y = aux1.y;
