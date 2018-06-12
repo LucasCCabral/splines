@@ -10,7 +10,6 @@ ctx.fill();
 
 function drawLine(p1x,p1y,p2x,p2y){
 	ctx.beginPath();
-    console.log("fazendo nada");
 	ctx.strokeStyle = color;
 	ctx.lineWidth = '5';
 	ctx.fillStyle = color;

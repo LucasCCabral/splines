@@ -43,8 +43,8 @@ function controlPointJunction(i){
 	k1 = u[i-1]; //deltaUi-1
 	k2 = u[i]; //deltaUi
 	k3 = k1+k2;	
-	controlPointx[3*i] = (k2/k3)*controlPointx[getRealIndex(3*i-1)]+(k1/k3)*controlPointx[getRealIndex(3*i+1)];
-	controlPointy[3*i] = (k2/k3)*controlPointy[getRealIndex(3*i-1)]+(k1/k3)*controlPointy[getRealIndex(3*i+1)];
+	controlPointx[3*i] = (k2/k3)*controlPointx[3*i-1]+(k1/k3)*controlPointx[3*i+1];
+	controlPointy[3*i] = (k2/k3)*controlPointy[3*i-1]+(k1/k3)*controlPointy[3*i+1];
 }
 
 //esse é o calculo do b3i-2
@@ -115,6 +115,7 @@ function bezierCalculus(){
 		rightHandExtremityPoint();
 	}
 
+//-------------------------------Não esta calculando direito o b3i pois o b4 ainda n foi calculado, la esta um valor passado
 	for(var z=1 ; z<L; z++){
 		if(z>1){
 			leftHandPoint(z); //b3i-1
@@ -137,8 +138,6 @@ var inputPointy = new Array;
 var u = new Array; // o vetor vai guardar o tamanho da corda
 var i = 0,j = 0;
 
-
-
 canvas.addEventListener('mousedown', function(e) {
 	p1.x=e.offsetX;
     p1.y=e.offsetY;
@@ -154,13 +153,13 @@ canvas.addEventListener('mousedown', function(e) {
     if(i>=3){
     	stringSize();
     	bezierCalculus();
-/*    	L = getL(i);
+    	L = getL(i);
 console.log("L=%d",L);
 for(var h=0;h<=3*L;h++){
-console.log("B%d:(%d,%d), ",h,controlPointx[h],controlPointy[h]);
+console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
 }
 console.log('');
-*/
+
     }
     drawDot();    
     j=i;
