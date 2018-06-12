@@ -14,9 +14,6 @@ function Dot(x,y){
    this.y=y;
 }
 
-//gets the real index for inputPoint, i'll send -1 and it'll give me 0 for example
-//beware cause it does not work for all controlPoint, cuz control point is already right
-
 function getRealIndex(pos){
 	return pos + 1;
 }
@@ -25,15 +22,19 @@ function getPraticalIndex(index){
 	return index-1;
 }
 
-function getL(){
-	return getPraticalIndex(i) - 1;
+function getL(index){
+	return getPraticalIndex(index) - 1;
 }
-/*calculo dos u's está funcionando*/
+
+function deltaU (i){
+	return (u[i-3] - u[i-4])/(u[i-3]+u[i-4]);
+}
+//se pa o calulo do deltaU esta errado, pois desse jeito b3l-2 pode ser (0,0)
 function stringSize(){
-	var aux,strS;// os k's estão sendo calculados de forma errada
+	var aux,strS;
 	aux = inputPointx[i]-inputPointx[i-1];
 	strS = inputPointy[i]-inputPointy[i-1];
-	strS = Math.sqrt(Math.pow(strS,2)+Math.pow(aux,2)); // essa é a ultima distancia
+	strS = Math.sqrt(Math.pow(strS,2)+Math.pow(aux,2));
 	u.push(strS);
 //console.log("P%d(%d,%d) P%d(%d,%d)",i-1,inputPointx[i-1],inputPointy[i-1],i,inputPointx[i],inputPointy[i]);
 //console.log("deltaU%d:%d ",i-3,strS);
@@ -42,49 +43,66 @@ function stringSize(){
 
 function controlPointJunction(jNmber){
 	var z,k1,k2,k3;
-	z = getL()*3-jNmber; //jNmber é um npumero que indica qual junção eu quero de  traz para frente;
+	z = getL(i)*3-3; 
+	//jNmber é um npumero que indica qual junção eu quero de traz para frente
+	// 3*i é o fim de um curva de bezier logo, u[i-4] ^ e u[i-5] serão os usados nesse caso.
 	controlPointx[z] = (k1/k3)*controlPointx[z-1]+(k2/k3)*controlPointx[z+1];
 	controlPointy[z] = (k1/k3)*controlPointy[z-1]+(k2/k3)*controlPointy[z+1];
 }
 
+//esse é o calculo do b3i-2
 function leftHandPoint(){
 	var z,k1,k2,k3,k4; // os k's ainda precisam ser calculados
-	z = getL()*3 - 3; // vai retornar exatamente o que eu preciso
+	z = getL(i)*3 - 3; // vai retornar exatamente o que eu preciso
 		//z = 3*i-2;
-	
 	controlPointx[3*z-2] = inputPointx[z-1] + inputPointx[z];// os inputs estão errados, eles
 	controlPointy[3*z-2] = inputPointy[z-1] + inputPointy[z];	
 }
 
+//esse é o calculo do b3i-1
 function leftHandMiddlePoint(){
-	var z,k1,k2,k3,k4; // os k's ainda precisam ser calculados
-	z = getL()*3 - 3; // z é o equivalente de 3*i-3 ou seja o 3i logo atras de 3L
-	controlPointx[3*z-2] = inputPointx[z-1] + inputPointx[z];
-	controlPointy[3*z-2] = inputPointy[z-1] + inputPointy[z];	
+	var z;
+	z = getL(i)*3 - 3; 
+	controlPointx[3*z-1] = inputPointx[z-1] + inputPointx[z];
+	controlPointy[3*z-1] = inputPointy[z-1] + inputPointy[z];	
 }
 
-function rightHandExtremityPoint(){
-//--------------codigo não testado, lembrar de testar-------------
-	
-//	controlPointx[3*L-2] = (k1/k3)*inputPointx[getRealIndex(L)] + (k2/k3)*inputPointx[getRealIndex(L-1)];
-//	controlPointy[3*L-2] = (k1/k3)*inputPointy[getRealIndex(L)] + (k2/k3)*inputPointy[getRealIndex(L-1)];
+// esse é o calculo do b3l-2, apenas.
+function rightHandExtremityPoint(){ 
+//uL => u[i-3]
+//#todo fix o calculo dos u's
+	var L = getL(i);
+	var k1,k2;
+	k1 = deltaU(i-1);
+	k2 = deltaU(i);
+	controlPointx[3*L-2] = k1*inputPointx[getRealIndex(L)] + k2*inputPointx[getRealIndex(L-1)];
+	controlPointy[3*L-2] = k1*inputPointy[getRealIndex(L)] + k2*inputPointy[getRealIndex(L-1)];
+//console.log("inputPoint1:(%d,%d) inputPoint2:(%d,%d)",inputPointx[getRealIndex(L)],inputPointy[getRealIndex(L)],inputPointx[getRealIndex(L-1)],inputPointy[getRealIndex(L-1)] )
+//console.log("u[%d]:%d u[%d]:%d",i-3,u[i-3],i-4,u[i-4]);
 }
-
 function convertToControlPoint(){
-	//pontos B3l e B3l-1 sempre atualizados
 	controlPointx.push(inputPointx[i]);
 	controlPointy.push(inputPointy[i]);
-
+//before i ===3, it's the trivial case where the spline points are equal to  the simple bezier points
 	if(i>=3){
 		stringSize();
-		rightHandExtremityPoint();
-		/*leftHandMiddlePoint();
-		controlPointJunction(); 
-		leftHandPoint();*/
-	}
+		if(i>3){
+			rightHandExtremityPoint();
+			leftHandMiddlePoint();
+			controlPointJunction(); 
+			leftHandPoint();		
+		}
+	}		
+
 }
 
+/*
+O "tamanho" da corda está certo?
+Devo dar push sempre no rightHandExtremity point? ou basta dar igual na posição? 
 
+
+
+*/
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 resizeToFit();
@@ -117,7 +135,12 @@ for(i = 0 ; i<5 ; i++){
 	convertToControlPoint();
  	console.log("inputPoint:(%d,%d)" + "controlPoint:(%d,%d)",inputPointx[i],inputPointy[i],controlPointx[i],controlPointy[i])
 }
-
+/*
+L= getL();//debbug code
+for(i=0. i<3*L;i++){
+	console.log("controlPoint:(%d,%d)",inputPointx[i],inputPointy[i]);
+	console.log("u[%d]:%d",i,u[i]);
+}*/
 
 
 
