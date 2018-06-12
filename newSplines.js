@@ -26,6 +26,15 @@ function getL(index){
 	return getPraticalIndex(index) - 1;
 }
 
+
+function drawOrigPoints (){
+	for(var z=0; z<=i;z++){
+		drawDot(inputPointx[z],inputPointy[z]);
+		if(z>0)
+			drawLine(inputPointx[z-1],inputPointy[z-1],inputPointx[z],inputPointy[z]);
+	}
+}
+
 //se pa o calulo do deltaU esta errado, pois desse jeito b3l-2 pode ser (0,0)
 function stringSize(){
 	var aux,strS;
@@ -126,11 +135,18 @@ function bezierCalculus(){
 
 }
 
+
+function isInCircle(click) {
+    var v = {
+        x: circle.x - click.x,
+        y: circle.y - click.y
+    };
+    return (Math.sqrt(v.x * v.x + v.y * v.y) <= circle.radius);
+}
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 resizeToFit();
-var p1 = new Dot(0,0);
-var p2 = new Dot(0,0);
 var controlPointx = new Array;
 var controlPointy = new Array;
 var inputPointx = new Array;
@@ -138,25 +154,28 @@ var inputPointy = new Array;
 var u = new Array; // o vetor vai guardar o tamanho da corda
 var i = 0,j = 0;
 
-canvas.addEventListener('mousedown', function(e) {
-	p1.x=e.offsetX;
-    p1.y=e.offsetY;
-    inputPointx.push(p1.x);
-    inputPointy.push(p1.y);
-    if(i>0){
-    	p2.x = inputPointx[j];
-    	p2.y = inputPointy[j];
-    	color = "black";
-    	drawLine(p1.x,p1.y,p2.x,p2.y);
-    }
+var circle = {
+    x: 15,
+    y: 100,
+    radius: 15
+};
 
+
+canvas.addEventListener('mousedown', function(e) {
+    inputPointx.push(e.offsetX);
+    inputPointy.push(e.offsetY);
+    if(i>0){
+    	color = "black";
+    	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
+    }
     if(i>=3){
     	stringSize();
     	bezierCalculus();
     	L = getL(i);
+    	ctx.clearRect(0, 0, canvas.width, canvas.height);
+    	drawOrigPoints();
     	//i =3, L = 3-2 -> 1;
     	bezierCurve(L);
-
 /*console.log("L=%d",L);
 for(var h=0;h<=3*L;h++){
 console.log("B%d:(%f,%f), ",h,controlPointx[h],controlPointy[h]);
@@ -165,7 +184,7 @@ for(var h =0; h <=i;h++){
 console.log("d%d:(%f,%f), ",h-1,inputPointx[h],inputPointy[h]);	
 }*/
   }
-    drawDot();    
+    drawDot(inputPointx[i],inputPointy[i]);    
     j=i;
     i++;
 });
