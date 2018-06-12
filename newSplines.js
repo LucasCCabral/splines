@@ -141,10 +141,8 @@ function isInCircle(click) {
     for(var k=0; k<i;k++){
         vx = inputPointx[j] - click.x,
         vy = inputPointy[j] - click.y
-    	if(Math.sqrt(vx * vx + vy * vy) <= 15){
+    	if(Math.sqrt(vx * vx + vy * vy) <= 15)
     		move = 1;
-    		console.log("It's in.");
-    	}
     }			
 }
 
@@ -161,12 +159,12 @@ var move = 0;
 
 
 canvas.addEventListener('mousedown', function(e) {
+    inputPointx.push(e.offsetX);
+    inputPointy.push(e.offsetY);
     isInCircle({x: e.offsetX,y: e.offsetY});
     console.log(move);
    //if(e.button === 1)
-   if(!move){
-       inputPointx.push(e.offsetX);
-       inputPointy.push(e.offsetY);
+   if(!move){   
        if(i>0){
        	color = "black";
        	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
@@ -199,6 +197,9 @@ canvas.addEventListener('mousemove', function(e) {
         inputPointx = e.offsetX;
         inputPointy = e.offsetY;
         drawDot(inputPointx[i],inputPointy[i]);    
-
     }
+});
+
+canvas.addEventListener('mouseup', function(e) {
+    move = false;
 });
