@@ -90,10 +90,8 @@ function leftHandPoint(i){
 }
 
 function rightHandExtremityPoint(){ 
-	// esse tbm vai estar certo
 	var L = getL(i);
 	var k1,k2,k3;
-	//checar se esse calculo está coerente
 	k1 = u[L-2];
 	k2 = u[L-1];
 	k3 = k1+k2;
@@ -122,9 +120,9 @@ function bezierCalculus(){
 	controlPointy[0] = inputPointy[0];
 	controlPointx[1] = inputPointx[1];
 	controlPointy[1] = inputPointy[1];
-//console.log("d%d:(%d,%d) - b%d:(%d,%d)",-1,inputPointx[0],inputPointy[0],0,controlPointx[0],controlPointy[0]);
 	//setting B3l
 	controlPointx[3*L] = inputPointx[i];
+console.log("d%d:(%d,%d) - b%d:(%d,%d)",-1,inputPointx[i],inputPointy[i-1],0,controlPointx[0],controlPointy[0]);
 	controlPointy[3*L] = inputPointy[i];
 	controlPointx[3*L-1] = inputPointx[i-1];
 	controlPointy[3*L-1] = inputPointy[i-1];
@@ -172,24 +170,25 @@ var move = 0,movingIndex;
 
 canvas.addEventListener('mousedown', function(e) {
    isInCircle({x: e.offsetX,y: e.offsetY});
-   //if(e.button === 1)
-   
-   if (e.button === 2){
-   		console.log("hurray");
+
+   if (e.button === 2){ //deleta
    		isInCircle({x: e.offsetX,y: e.offsetY});
    		if(move){
    			inputPointx.splice(movingIndex, 1);
    			inputPointy.splice(movingIndex, 1);   			
+   			i-=2; 
+//for(var a=0;a<=i;a++){console.log("D%d(%d,%d)",a-1,inputPointx[a],inputPointy[a]);}   			
    			move=0;
-   			i--;
    			if(movingIndex>=2){
-      	      	stringSizeChange(movingIndex);       	
+	   			u.splice(movingIndex-2, 1);   			   	
 	      	}
 	      	bezierCalculus();
 	       	L = getL(i); 
 	      	console.log(movingIndex,L);
 	       	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	       	drawOrigPoints();
+//for(var a=0;a<=3*L;a++){console.log("B%d(%d,%d)",a,controlPointx[a],controlPointy[a]);}
+			i++;
 	       	bezierCurve(L);
    		}
    }
@@ -198,6 +197,7 @@ canvas.addEventListener('mousedown', function(e) {
       if(!move){   
       		inputPointx.push(e.offsetX);
       		inputPointy.push(e.offsetY);
+//console.log("D%d(%d,%d)",i-1,inputPointx[i],inputPointy[i]);
           	if(i>0){
           	color = "black";
           	drawLine(inputPointx[i],inputPointy[i],inputPointx[j],inputPointy[j]);
@@ -217,7 +217,6 @@ canvas.addEventListener('mousedown', function(e) {
   }
 });
 
-//not working
 canvas.addEventListener('mousemove', function(e) {
     if (move) {
         inputPointx[movingIndex] = e.offsetX;
@@ -225,11 +224,15 @@ canvas.addEventListener('mousemove', function(e) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);       	
       	//CHANGES THE STRING SIZE
       	if(movingIndex>=2){
-      	      	stringSizeChange(movingIndex);       	
+      	   stringSizeChange(movingIndex);       	
       	}
-      	bezierCalculus();
+      	i--;
        	L = getL(i); 
-      	console.log(movingIndex,L);
+      	bezierCalculus();
+//console.log(L);
+//for(var a=0;a<=i;a++){console.log("D%d(%d,%d)",a-1,inputPointx[a],inputPointy[a])}   			
+//for(var a=0;a<=3*L;a++){console.log("B%d(%d,%d)",a,controlPointx[a],controlPointy[a])}
+       	i++;
        	ctx.clearRect(0, 0, canvas.width, canvas.height);
        	drawOrigPoints();
        	bezierCurve(L);
